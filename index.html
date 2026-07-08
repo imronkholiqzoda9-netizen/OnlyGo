@@ -1,0 +1,2240 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OnlyGo — фильмы, сериалы, спорт</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        /* ============================================================
+           RESET & BASE
+           ============================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        :root {
+            --bg-primary: #0a0a12;
+            --bg-secondary: #12121e;
+            --bg-card: #1a1a2e;
+            --bg-hover: #262644;
+            --text-primary: #f0f2f8;
+            --text-secondary: #b0b2c8;
+            --text-muted: #556677;
+            --border-color: rgba(255, 255, 255, 0.04);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.4);
+            --radius: 20px;
+            --radius-sm: 12px;
+            --radius-lg: 28px;
+            --gradient: linear-gradient(135deg, #6c5ce7, #0984e3);
+            --gradient-red: linear-gradient(135deg, #e74c3c, #f39c12);
+            --primary: #6c5ce7;
+            --success: #00b894;
+            --danger: #e74c3c;
+            --warning: #f7c948;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding-bottom: 80px;
+            overflow-x: hidden;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        button {
+            font-family: inherit;
+            cursor: pointer;
+            border: none;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        /* ============================================================
+           LOADING
+           ============================================================ */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-primary);
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.6s, visibility 0.6s;
+        }
+        #loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        #loader .brand {
+            font-size: 4rem;
+            font-weight: 900;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        #loader .spinner {
+            margin-top: 24px;
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(108, 92, 231, 0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ============================================================
+           HEADER
+           ============================================================ */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 18, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 0;
+            transition: 0.3s;
+        }
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 900;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+        .logo i {
+            -webkit-text-fill-color: var(--primary);
+        }
+        .header-search {
+            flex: 1;
+            max-width: 420px;
+            min-width: 140px;
+            display: flex;
+            align-items: center;
+            background: var(--bg-secondary);
+            border-radius: 40px;
+            padding: 0 16px;
+            border: 1px solid var(--border-color);
+            transition: 0.3s;
+        }
+        .header-search:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.06);
+        }
+        .header-search input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 10px 12px;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            outline: none;
+        }
+        .header-search i {
+            color: var(--text-muted);
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .header-actions button {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            padding: 6px 10px;
+            border-radius: 40px;
+            transition: 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+        .header-actions button:hover {
+            color: var(--primary);
+            background: rgba(108, 92, 231, 0.04);
+        }
+        .header-actions .badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: var(--danger);
+            color: #fff;
+            font-size: 0.5rem;
+            font-weight: 700;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ============================================================
+           BOTTOM NAV
+           ============================================================ */
+        .bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 18, 0.95);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border-color);
+            z-index: 999;
+            padding: 6px 0 12px;
+            justify-content: space-around;
+        }
+        .bottom-nav a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.55rem;
+            color: var(--text-muted);
+            transition: 0.3s;
+            gap: 2px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+        .bottom-nav a i {
+            font-size: 1.2rem;
+        }
+        .bottom-nav a.active {
+            color: var(--primary);
+        }
+        .bottom-nav a:hover {
+            color: var(--primary);
+        }
+        @media (max-width: 768px) {
+            .bottom-nav {
+                display: flex;
+            }
+        }
+
+        /* ============================================================
+           PAGES
+           ============================================================ */
+        .page {
+            display: none;
+            animation: fadeUp 0.4s ease;
+            padding: 20px 0 40px;
+        }
+        .page.active {
+            display: block;
+        }
+        @keyframes fadeUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .page-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .page-title i {
+            color: var(--primary);
+        }
+        .page-title .count {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        /* ============================================================
+           HERO BANNER
+           ============================================================ */
+        .hero-banner {
+            position: relative;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            margin-bottom: 32px;
+            background: var(--gradient);
+            min-height: 320px;
+            display: flex;
+            align-items: center;
+            padding: 40px 48px;
+            background-size: cover;
+            background-position: center;
+        }
+        .hero-banner .overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(10, 10, 18, 0.85) 0%, transparent 100%);
+        }
+        .hero-banner .content {
+            position: relative;
+            z-index: 1;
+            max-width: 500px;
+        }
+        .hero-banner .content .badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(4px);
+            padding: 4px 16px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .hero-banner .content h1 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 8px;
+        }
+        .hero-banner .content p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+            max-width: 380px;
+        }
+        .hero-banner .content .btn-watch {
+            background: #fff;
+            color: #1a1a2e;
+            padding: 12px 32px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        .hero-banner .content .btn-watch:hover {
+            transform: scale(1.04);
+            box-shadow: 0 8px 32px rgba(255, 255, 255, 0.15);
+        }
+        @media (max-width: 768px) {
+            .hero-banner {
+                padding: 30px 24px;
+                min-height: 240px;
+            }
+            .hero-banner .content h1 {
+                font-size: 1.6rem;
+            }
+            .hero-banner .content p {
+                font-size: 0.85rem;
+            }
+        }
+
+        /* ============================================================
+           CATEGORIES
+           ============================================================ */
+        .categories-scroll {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 4px 0 16px;
+            scrollbar-width: none;
+        }
+        .categories-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        .categories-scroll .cat-item {
+            padding: 6px 20px;
+            border-radius: 40px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            font-size: 0.8rem;
+            font-weight: 500;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: 0.3s;
+            color: var(--text-secondary);
+        }
+        .categories-scroll .cat-item:hover {
+            border-color: var(--primary);
+            color: var(--text-primary);
+        }
+        .categories-scroll .cat-item.active {
+            background: var(--gradient);
+            color: #fff;
+            border-color: transparent;
+        }
+
+        /* ============================================================
+           CONTENT CARDS
+           ============================================================ */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .content-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .content-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--primary);
+        }
+        .content-card .poster {
+            width: 100%;
+            aspect-ratio: 2/3;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+        .content-card .poster .play-icon {
+            position: absolute;
+            font-size: 2.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            opacity: 0;
+            transition: 0.3s;
+        }
+        .content-card:hover .poster .play-icon {
+            opacity: 1;
+        }
+        .content-card .poster .rating-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            padding: 2px 10px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--warning);
+        }
+        .content-card .info {
+            padding: 14px 16px 16px;
+        }
+        .content-card .info .title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 2px;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .content-card .info .meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .content-card .info .meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* ============================================================
+           SPORT CARDS
+           ============================================================ */
+        .match-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 12px;
+            transition: 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .match-card:hover {
+            border-color: var(--primary);
+            transform: translateX(4px);
+        }
+        .match-card .teams {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-weight: 600;
+        }
+        .match-card .teams .vs {
+            color: var(--text-muted);
+            font-weight: 400;
+            font-size: 0.8rem;
+        }
+        .match-card .score {
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: var(--primary);
+        }
+        .match-card .match-info {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .match-card .match-status {
+            padding: 2px 14px;
+            border-radius: 40px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .status-live {
+            background: var(--danger);
+            color: #fff;
+            animation: pulse 1.5s infinite;
+        }
+        .status-upcoming {
+            background: var(--primary);
+            color: #fff;
+        }
+        .status-finished {
+            background: var(--bg-secondary);
+            color: var(--text-muted);
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        /* ============================================================
+           PLAYER
+           ============================================================ */
+        .player-container {
+            background: #000;
+            border-radius: var(--radius);
+            overflow: hidden;
+            aspect-ratio: 16/9;
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .player-container video {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .player-container .player-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .player-container .player-overlay button {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.3s;
+            backdrop-filter: blur(4px);
+        }
+        .player-container .player-overlay button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* ============================================================
+           SEARCH RESULTS
+           ============================================================ */
+        .search-results {
+            padding: 20px 0;
+        }
+
+        /* ============================================================
+           AUTH
+           ============================================================ */
+        .auth-container {
+            max-width: 400px;
+            margin: 20px 0;
+        }
+        .auth-container input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: 0.3s;
+            margin-bottom: 12px;
+        }
+        .auth-container input:focus {
+            border-color: var(--primary);
+        }
+        .auth-container button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: var(--radius-sm);
+            background: var(--gradient);
+            color: #fff;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .auth-container button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(108, 92, 231, 0.2);
+        }
+        .auth-container .switch {
+            text-align: center;
+            margin-top: 12px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .auth-container .switch a {
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .auth-container .error {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        /* ============================================================
+           ADMIN
+           ============================================================ */
+        .admin-panel {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            margin-top: 20px;
+        }
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+        .admin-stats .stat {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+        .admin-stats .stat .num {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        .admin-stats .stat .label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+        .admin-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 16px 0;
+            align-items: flex-end;
+        }
+        .admin-form .field {
+            flex: 1 1 150px;
+        }
+        .admin-form label {
+            display: block;
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .admin-form input,
+        .admin-form select,
+        .admin-form textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.85rem;
+            outline: none;
+        }
+        .admin-form input:focus,
+        .admin-form select:focus,
+        .admin-form textarea:focus {
+            border-color: var(--primary);
+        }
+        .admin-form .btn-submit {
+            padding: 8px 24px;
+            border: none;
+            border-radius: var(--radius-sm);
+            background: var(--gradient);
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            height: 40px;
+        }
+        .admin-form .btn-submit:hover {
+            transform: scale(1.02);
+        }
+        .admin-table-wrap {
+            overflow-x: auto;
+        }
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+        .admin-table th,
+        .admin-table td {
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .admin-table th {
+            color: var(--text-muted);
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .admin-table .actions button {
+            padding: 2px 10px;
+            border: none;
+            border-radius: 40px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .admin-table .actions .edit-btn {
+            background: var(--warning);
+            color: #1a1a2e;
+        }
+        .admin-table .actions .delete-btn {
+            background: var(--danger);
+            color: #fff;
+        }
+        .admin-table .actions .block-btn {
+            background: #e67e22;
+            color: #fff;
+        }
+        .admin-table .actions .unblock-btn {
+            background: var(--success);
+            color: #fff;
+        }
+
+        /* ============================================================
+           TOAST
+           ============================================================ */
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .toast {
+            background: var(--bg-card);
+            padding: 12px 20px;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow);
+            animation: slideRight 0.3s ease;
+            max-width: 360px;
+            border-left: 4px solid var(--primary);
+            border: 1px solid var(--border-color);
+        }
+        .toast.success {
+            border-left-color: var(--success);
+        }
+        .toast.error {
+            border-left-color: var(--danger);
+        }
+        .toast.warning {
+            border-left-color: var(--warning);
+        }
+        @keyframes slideRight {
+            0% {
+                opacity: 0;
+                transform: translateX(40px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* ============================================================
+           MODAL
+           ============================================================ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 9998;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            max-width: 560px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            animation: fadeUp 0.3s ease;
+        }
+        .modal .close-btn {
+            float: right;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .modal .close-btn:hover {
+            color: var(--danger);
+            transform: rotate(90deg);
+        }
+        .modal .detail-poster {
+            font-size: 5rem;
+            text-align: center;
+            padding: 20px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+        }
+        .modal .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .modal .detail-row .label {
+            color: var(--text-muted);
+        }
+        .modal .detail-row .value {
+            font-weight: 600;
+        }
+        .modal .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        .modal .modal-actions button {
+            flex: 1;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.3s;
+            min-width: 120px;
+        }
+        .modal .modal-actions .btn-watch {
+            background: var(--gradient);
+            color: #fff;
+        }
+        .modal .modal-actions .btn-watch:hover {
+            transform: scale(1.02);
+        }
+        .modal .modal-actions .btn-fav {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+        .modal .modal-actions .btn-fav.active {
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+        .modal .modal-actions .btn-fav:hover {
+            background: rgba(231, 76, 60, 0.04);
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 14px;
+            }
+            .header-search {
+                max-width: 140px;
+            }
+            .header-search input {
+                font-size: 0.8rem;
+                padding: 6px 8px;
+            }
+            .logo {
+                font-size: 1.2rem;
+            }
+            .page-title {
+                font-size: 1.3rem;
+            }
+            .hero-banner .content h1 {
+                font-size: 1.4rem;
+            }
+            .match-card {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .match-card .teams {
+                justify-content: center;
+            }
+            .match-card .score {
+                text-align: center;
+            }
+            .match-card .match-info {
+                justify-content: center;
+            }
+        }
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 12px;
+            }
+            .content-grid {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+                gap: 10px;
+            }
+            .content-card .info .title {
+                font-size: 0.8rem;
+            }
+            .content-card .info .meta {
+                font-size: 0.65rem;
+                gap: 6px;
+            }
+            .admin-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+            .admin-form .field {
+                flex: 1 1 100%;
+            }
+            .modal {
+                padding: 20px;
+            }
+            .hero-banner {
+                padding: 20px 16px;
+                min-height: 180px;
+            }
+            .hero-banner .content h1 {
+                font-size: 1.2rem;
+            }
+            .hero-banner .content .btn-watch {
+                padding: 8px 20px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================
+    LOADER
+    ============================================================ -->
+    <div id="loader">
+        <div class="brand"><i class="fas fa-play-circle"></i> OnlyGo</div>
+        <div class="spinner"></div>
+    </div>
+
+    <!-- ============================================================
+    TOAST
+    ============================================================ -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ============================================================
+    MODAL
+    ============================================================ -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <button class="close-btn" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    HEADER
+    ============================================================ -->
+    <header class="header">
+        <div class="container header-inner">
+            <a class="logo" onclick="showPage('home')">
+                <i class="fas fa-play-circle"></i> OnlyGo
+            </a>
+            <div class="header-search">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Поиск фильмов, спорта..." oninput="searchContent()" />
+            </div>
+            <div class="header-actions">
+                <button onclick="toggleFavorites()" title="Избранное">
+                    <i class="fas fa-heart"></i>
+                    <span class="badge" id="favBadge">0</span>
+                </button>
+                <button onclick="showPage('profile')" title="Профиль"><i class="fas fa-user"></i></button>
+                <button onclick="showAdminLogin()" title="Админ" style="font-size:0.8rem;opacity:0.4;">
+                    <i class="fas fa-user-shield"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ============================================================
+    BOTTOM NAV
+    ============================================================ -->
+    <nav class="bottom-nav">
+        <a class="active" onclick="showPage('home')"><i class="fas fa-home"></i><span>Главная</span></a>
+        <a onclick="showPage('movies')"><i class="fas fa-film"></i><span>Фильмы</span></a>
+        <a onclick="showPage('series')"><i class="fas fa-tv"></i><span>Сериалы</span></a>
+        <a onclick="showPage('sport')"><i class="fas fa-futbol"></i><span>Спорт</span></a>
+        <a onclick="showPage('profile')"><i class="fas fa-user"></i><span>Профиль</span></a>
+    </nav>
+
+    <!-- ============================================================
+    MAIN CONTENT
+    ============================================================ -->
+    <main class="container">
+
+        <!-- HOME -->
+        <div class="page active" id="page-home">
+            <div class="hero-banner" id="heroBanner" style="background:linear-gradient(135deg,#6c5ce7,#0984e3);">
+                <div class="overlay"></div>
+                <div class="content">
+                    <div class="badge"><i class="fas fa-star" style="color:var(--warning);"></i> Популярное</div>
+                    <h1 id="heroTitle">Дюна: Часть вторая</h1>
+                    <p id="heroDesc">Продолжение эпической саги. Пол Арридес продолжает свой путь по пустыне Арракиса.</p>
+                    <button class="btn-watch" onclick="watchContent(1)"><i class="fas fa-play"></i> Смотреть</button>
+                </div>
+            </div>
+
+            <div class="categories-scroll" id="categoriesScroll">
+                <span class="cat-item active" onclick="filterCategory('all', this)">Все</span>
+            </div>
+
+            <div class="page-title">
+                <i class="fas fa-fire" style="color:var(--danger);"></i> Популярное
+                <span class="count" id="homeCount"></span>
+            </div>
+            <div class="content-grid" id="homeContent"></div>
+        </div>
+
+        <!-- MOVIES -->
+        <div class="page" id="page-movies">
+            <div class="page-title"><i class="fas fa-film"></i> Фильмы <span class="count" id="moviesCount"></span></div>
+                         <div class="content-grid" id="moviesContent"></div>
+        </div>
+
+        <!-- SERIES -->
+        <div class="page" id="page-series">
+            <div class="page-title"><i class="fas fa-tv"></i> Сериалы <span class="count" id="seriesCount"></span></div>
+            <div class="content-grid" id="seriesContent"></div>
+        </div>
+
+        <!-- SPORT -->
+        <div class="page" id="page-sport">
+            <div class="page-title"><i class="fas fa-futbol"></i> Спорт <span class="count" id="sportCount"></span></div>
+            
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
+                <button class="cat-item" style="padding:8px 20px;border-radius:40px;background:var(--bg-card);border:1px solid var(--border-color);color:var(--text-secondary);cursor:pointer;" onclick="filterSport('all', this)">Все</button>
+                <button class="cat-item" style="padding:8px 20px;border-radius:40px;background:var(--bg-card);border:1px solid var(--border-color);color:var(--text-secondary);cursor:pointer;" onclick="filterSport('live', this)">🔴 LIVE</button>
+                <button class="cat-item" style="padding:8px 20px;border-radius:40px;background:var(--bg-card);border:1px solid var(--border-color);color:var(--text-secondary);cursor:pointer;" onclick="filterSport('upcoming', this)">📅 Скоро</button>
+                <button class="cat-item" style="padding:8px 20px;border-radius:40px;background:var(--bg-card);border:1px solid var(--border-color);color:var(--text-secondary);cursor:pointer;" onclick="filterSport('finished', this)">✅ Завершены</button>
+            </div>
+
+            <div id="sportContent"></div>
+        </div>
+
+        <!-- FAVORITES -->
+        <div class="page" id="page-favorites">
+            <div class="page-title"><i class="fas fa-heart" style="color:var(--danger);"></i> Избранное <span class="count" id="favCount"></span></div>
+            <div class="content-grid" id="favoritesContent"></div>
+        </div>
+
+        <!-- PROFILE -->
+        <div class="page" id="page-profile">
+            <div class="page-title"><i class="fas fa-user"></i> Профиль</div>
+            <div id="profileContent"></div>
+        </div>
+
+        <!-- ADMIN -->
+        <div class="page" id="page-admin">
+            <div class="page-title"><i class="fas fa-user-shield" style="color:var(--danger);"></i> Админ панель</div>
+            <div id="adminContent"></div>
+        </div>
+
+    </main>
+
+    <!-- ============================================================
+    JAVASCRIPT — ПОЛНАЯ ЛОГИКА
+    ============================================================ -->
+    <script>
+        // ================================================================
+        // 1. ДАННЫЕ
+        // ================================================================
+
+        let content = [];
+        let sportEvents = [];
+        let favorites = [];
+        let history = [];
+        let users = [];
+        let currentUser = null;
+        let isAdmin = false;
+        let currentCategory = 'all';
+        let nextContentId = 1;
+        let nextSportId = 1;
+
+        // ================================================================
+        // 2. ДЕФОЛТНЫЕ ДАННЫЕ
+        // ================================================================
+
+        function getDefaultContent() {
+            return [
+                { id: 1, type: 'movie', title: 'Дюна: Часть вторая', year: 2024, country: 'США', genre: 'Фантастика, Боевик',
+                    duration: '166 мин', rating: 8.6, description: 'Продолжение эпической саги. Пол Арридес продолжает свой путь по пустыне Арракиса.',
+                    poster: '🏜️', category: 'Фантастика', isNew: true, isPopular: true },
+                { id: 2, type: 'movie', title: 'Оппенгеймер', year: 2023, country: 'США, Великобритания',
+                    genre: 'Драма, Биография', duration: '180 мин', rating: 8.5,
+                    description: 'История создателя атомной бомбы Роберта Оппенгеймера.', poster: '💣',
+                    category: 'Драма', isNew: true, isPopular: true },
+                { id: 3, type: 'movie', title: 'Барби', year: 2023, country: 'США', genre: 'Комедия, Приключения',
+                    duration: '114 мин', rating: 7.2, description: 'Барби живёт в идеальном мире, но однажды она начинает задавать вопросы.',
+                    poster: '👱‍♀️', category: 'Комедия', isNew: false, isPopular: true },
+                { id: 4, type: 'series', title: 'Дом Дракона', year: 2022, country: 'США', genre: 'Фэнтези, Драма',
+                    duration: '50 мин', rating: 8.4, description: 'Приквел "Игры престолов". История дома Таргариенов.',
+                    poster: '🐉', category: 'Фэнтези', isNew: true, isPopular: true },
+                { id: 5, type: 'series', title: 'Пацаны', year: 2019, country: 'США', genre: 'Боевик, Комедия, Драма',
+                    duration: '50 мин', rating: 8.7, description: 'Группа людей решает бороться с коррумпированными супергероями.',
+                    poster: '🦸', category: 'Боевик', isNew: false, isPopular: true },
+                { id: 6, type: 'movie', title: 'Наполеон', year: 2023, country: 'США, Великобритания',
+                    genre: 'Драма, Военный', duration: '157 мин', rating: 6.8,
+                    description: 'Биографическая драма о французском императоре Наполеоне Бонапарте.', poster: '🎖️',
+                    category: 'Драма', isNew: true, isPopular: false },
+                { id: 7, type: 'movie', title: 'Человек-паук: Через вселенные', year: 2023, country: 'США',
+                    genre: 'Мультфильм, Боевик', duration: '140 мин', rating: 8.9,
+                    description: 'Майлз Моралес отправляется в путешествие по мультивселенной.', poster: '🕷️',
+                    category: 'Мультфильмы', isNew: true, isPopular: true },
+                { id: 8, type: 'series', title: 'Ведьмак', year: 2019, country: 'США, Польша', genre: 'Фэнтези, Боевик',
+                    duration: '50 мин', rating: 8.1, description: 'Охотник на монстров Геральт из Ривии борется с силами зла.',
+                    poster: '⚔️', category: 'Фэнтези', isNew: false, isPopular: true },
+                { id: 9, type: 'movie', title: 'Фуриоса: Безумный Макс', year: 2024, country: 'США, Австралия',
+                    genre: 'Боевик, Приключения', duration: '148 мин', rating: 8.2,
+                    description: 'Приквел "Безумного Макса". История Фуриосы до встречи с Максом.',
+                    poster: '🔥', category: 'Боевик', isNew: true, isPopular: false },
+                { id: 10, type: 'movie', title: 'Субстанция', year: 2024, country: 'США, Франция',
+                    genre: 'Ужасы, Фантастика', duration: '141 мин', rating: 7.9,
+                    description: 'Страшная история о том, как далеко люди готовы зайти ради красоты.', poster: '💉',
+                    category: 'Ужасы', isNew: true, isPopular: false },
+                { id: 11, type: 'series', title: 'Одни из нас', year: 2023, country: 'США', genre: 'Драма, Ужасы',
+                    duration: '50 мин', rating: 8.8, description: 'В мире, захваченном заражёнными, мужчина и девочка путешествуют через Америку.',
+                    poster: '🧟', category: 'Ужасы', isNew: false, isPopular: true },
+                { id: 12, type: 'movie', title: 'Годзилла и Конг: Новая империя', year: 2024, country: 'США',
+                    genre: 'Фантастика, Боевик', duration: '115 мин', rating: 7.1,
+                    description: 'Годзилла и Конг объединяются против нового врага.', poster: '🦍',
+                    category: 'Фантастика', isNew: true, isPopular: false },
+            ];
+        }
+
+        function getDefaultSport() {
+            return [
+                { id: 1, sport: 'football', team1: 'Барселона', team2: 'Реал Мадрид', score: '2-1', status: 'finished',
+                    date: '2026-07-08', time: '22:00', tournament: 'Ла Лига', highlights: '🔥 Голы: Левандовски, Ямаль, Винисиус' },
+                { id: 2, sport: 'football', team1: 'Манчестер Сити', team2: 'Ливерпуль', score: '3-2', status: 'finished',
+                    date: '2026-07-07', time: '20:30', tournament: 'АПЛ', highlights: '⚡ Хет-трик Холанда!' },
+                { id: 3, sport: 'football', team1: 'Бавария', team2: 'Боруссия Д', score: '0-0', status: 'live',
+                    date: '2026-07-08', time: '21:00', tournament: 'Бундеслига', highlights: '🔴 LIVE' },
+                { id: 4, sport: 'basketball', team1: 'Лейкерс', team2: 'Бостон', score: '98-95', status: 'finished',
+                    date: '2026-07-07', time: '23:00', tournament: 'NBA', highlights: '🏀 Овертайм!' },
+                { id: 5, sport: 'football', team1: 'ПСЖ', team2: 'Марсель', score: null, status: 'upcoming',
+                    date: '2026-07-09', time: '22:00', tournament: 'Лига 1', highlights: '📅 Матч дня' },
+                { id: 6, sport: 'tennis', team1: 'Новак Джокович', team2: 'Карлос Алькарас', score: '6-4 7-6', status: 'finished',
+                    date: '2026-07-06', time: '18:00', tournament: 'Уимблдон', highlights: '🎾 Финал!' },
+                { id: 7, sport: 'mma', team1: 'Ислам Махачев', team2: 'Чарльз Оливейра', score: '5-0', status: 'finished',
+                    date: '2026-07-06', time: '20:00', tournament: 'UFC', highlights: '🥊 Нокаут в 3-м раунде' },
+                { id: 8, sport: 'formula1', team1: 'Макс Ферстаппен', team2: 'Льюис Хэмилтон', score: '1:32:45',
+                    status: 'finished', date: '2026-07-05', time: '15:00', tournament: 'Гран-при Великобритании',
+                    highlights: '🏎️ Победа Ферстаппена' },
+            ];
+        }
+
+        // ================================================================
+        // 3. ИНИЦИАЛИЗАЦИЯ
+        // ================================================================
+
+        function init() {
+            // Загрузка из LocalStorage
+            const savedContent = localStorage.getItem('onlygo_content');
+            const savedSport = localStorage.getItem('onlygo_sport');
+            const savedFavorites = localStorage.getItem('onlygo_favorites');
+            const savedHistory = localStorage.getItem('onlygo_history');
+            const savedUsers = localStorage.getItem('onlygo_users');
+            const savedUser = localStorage.getItem('onlygo_current_user');
+            const savedAdmin = localStorage.getItem('onlygo_admin');
+
+            if (savedContent) {
+                try { content = JSON.parse(savedContent); } catch (e) { content = getDefaultContent(); }
+            } else {
+                content = getDefaultContent();
+            }
+
+            if (savedSport) {
+                try { sportEvents = JSON.parse(savedSport); } catch (e) { sportEvents = getDefaultSport(); }
+            } else {
+                sportEvents = getDefaultSport();
+            }
+
+            if (savedFavorites) {
+                try { favorites = JSON.parse(savedFavorites); } catch (e) { favorites = []; }
+            }
+
+            if (savedHistory) {
+                try { history = JSON.parse(savedHistory); } catch (e) { history = []; }
+            }
+
+            if (savedUsers) {
+                try { users = JSON.parse(savedUsers); } catch (e) { users = []; }
+            }
+
+            if (savedUser) {
+                try { currentUser = JSON.parse(savedUser); } catch (e) { currentUser = null; }
+            }
+
+            if (savedAdmin) {
+                isAdmin = savedAdmin === 'true';
+            }
+
+            // Дефолтный пользователь
+            if (users.length === 0) {
+                users.push({
+                    id: 1,
+                    name: 'Admin',
+                    email: 'admin@onlygo.com',
+                    password: 'admin123',
+                    isAdmin: true,
+                    blocked: false
+                });
+                saveData();
+            }
+
+            nextContentId = content.length + 1;
+            nextSportId = sportEvents.length + 1;
+
+            // Обновляем UI
+            updateFavBadge();
+            renderCategories();
+            renderHome();
+            renderMovies();
+            renderSeries();
+            renderSport();
+            renderFavorites();
+            renderProfile();
+            renderAdmin();
+            updateHero();
+
+            // Скрываем загрузку
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+            }, 1200);
+        }
+
+        // ================================================================
+        // 4. СОХРАНЕНИЕ
+        // ================================================================
+
+        function saveData() {
+            localStorage.setItem('onlygo_content', JSON.stringify(content));
+            localStorage.setItem('onlygo_sport', JSON.stringify(sportEvents));
+            localStorage.setItem('onlygo_favorites', JSON.stringify(favorites));
+            localStorage.setItem('onlygo_history', JSON.stringify(history));
+            localStorage.setItem('onlygo_users', JSON.stringify(users));
+            localStorage.setItem('onlygo_current_user', JSON.stringify(currentUser));
+            localStorage.setItem('onlygo_admin', isAdmin.toString());
+        }
+
+        // ================================================================
+        // 5. НАВИГАЦИЯ
+        // ================================================================
+
+        function showPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const target = document.getElementById('page-' + page);
+            if (target) target.classList.add('active');
+
+            document.querySelectorAll('.bottom-nav a').forEach(a => a.classList.remove('active'));
+            const navMap = { home: 0, movies: 1, series: 2, sport: 3, profile: 4 };
+            if (navMap[page] !== undefined) {
+                const items = document.querySelectorAll('.bottom-nav a');
+                if (items[navMap[page]]) items[navMap[page]].classList.add('active');
+            }
+
+            if (page === 'home') renderHome();
+            if (page === 'movies') renderMovies();
+            if (page === 'series') renderSeries();
+            if (page === 'sport') renderSport();
+            if (page === 'favorites') renderFavorites();
+            if (page === 'profile') renderProfile();
+            if (page === 'admin') renderAdmin();
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ================================================================
+        // 6. КАТЕГОРИИ
+        // ================================================================
+
+        function renderCategories() {
+            const container = document.getElementById('categoriesScroll');
+            const categories = ['Все', 'Новинки', 'Популярное', 'Боевики', 'Комедии', 'Драмы', 'Ужасы', 'Фантастика',
+                'Мультфильмы', 'Документальные'
+            ];
+            container.innerHTML = categories.map((cat, i) =>
+                `<span class="cat-item ${i === 0 ? 'active' : ''}" onclick="filterCategory('${cat === 'Все' ? 'all' : cat}', this)">${cat}</span>`
+            ).join('');
+        }
+
+        function filterCategory(category, el) {
+            currentCategory = category;
+            document.querySelectorAll('.categories-scroll .cat-item').forEach(c => c.classList.remove('active'));
+            if (el) el.classList.add('active');
+            renderHome();
+            renderMovies();
+            renderSeries();
+        }
+
+        function filterSport(type, el) {
+            document.querySelectorAll('#page-sport .cat-item').forEach(c => c.classList.remove('active'));
+            if (el) el.classList.add('active');
+            renderSport(type);
+        }
+
+        // ================================================================
+        // 7. ОТРИСОВКА КОНТЕНТА
+        // ================================================================
+
+        function renderContentCard(item) {
+            const isFav = favorites.includes(item.id);
+            const ratingStars = '⭐'.repeat(Math.floor(item.rating || 0)) + (item.rating % 1 >= 0.5 ? '⭐' : '');
+            const badge = item.isNew ? '<span class="badge-new">Новинка</span>' : '';
+            const typeIcon = item.type === 'movie' ? '🎬' : '📺';
+
+            return `
+                <div class="content-card" onclick="openDetail(${item.id})">
+                    <div class="poster">
+                        ${item.poster || '📦'}
+                        <div class="play-icon"><i class="fas fa-play-circle"></i></div>
+                        <div class="rating-badge">${ratingStars || '☆☆☆☆☆'} ${item.rating || 0}</div>
+                        ${badge}
+                    </div>
+                    <div class="info">
+                        <div class="title">${item.title}</div>
+                        <div class="meta">
+                            <span>${item.year}</span>
+                            <span>${item.genre ? item.genre.split(',')[0] : ''}</span>
+                            <span>${typeIcon}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderHome() {
+            const container = document.getElementById('homeContent');
+            let filtered = content;
+
+            if (currentCategory !== 'all') {
+                if (currentCategory === 'Новинки') filtered = content.filter(c => c.isNew);
+                else if (currentCategory === 'Популярное') filtered = content.filter(c => c.isPopular);
+                else filtered = content.filter(c => c.genre && c.genre.includes(currentCategory));
+            }
+
+            const display = filtered.slice(0, 8);
+            container.innerHTML = display.map(c => renderContentCard(c)).join('');
+            document.getElementById('homeCount').textContent = `(${filtered.length})`;
+        }
+
+        function renderMovies() {
+            const container = document.getElementById('moviesContent');
+            let filtered = content.filter(c => c.type === 'movie');
+            if (currentCategory !== 'all' && currentCategory !== 'Новинки' && currentCategory !== 'Популярное') {
+                filtered = filtered.filter(c => c.genre && c.genre.includes(currentCategory));
+            }
+            if (currentCategory === 'Новинки') filtered = filtered.filter(c => c.isNew);
+            if (currentCategory === 'Популярное') filtered = filtered.filter(c => c.isPopular);
+
+            container.innerHTML = filtered.map(c => renderContentCard(c)).join('');
+            document.getElementById('moviesCount').textContent = `(${filtered.length})`;
+        }
+
+        function renderSeries() {
+            const container = document.getElementById('seriesContent');
+            let filtered = content.filter(c => c.type === 'series');
+            if (currentCategory !== 'all' && currentCategory !== 'Новинки' && currentCategory !== 'Популярное') {
+                filtered = filtered.filter(c => c.genre && c.genre.includes(currentCategory));
+            }
+            if (currentCategory === 'Новинки') filtered = filtered.filter(c => c.isNew);
+            if (currentCategory === 'Популярное') filtered = filtered.filter(c => c.isPopular);
+
+            container.innerHTML = filtered.map(c => renderContentCard(c)).join('');
+            document.getElementById('seriesCount').textContent = `(${filtered.length})`;
+        }
+
+        function renderSport(type) {
+            const container = document.getElementById('sportContent');
+            let filtered = sportEvents;
+            if (type === 'live') filtered = sportEvents.filter(s => s.status === 'live');
+            else if (type === 'upcoming') filtered = sportEvents.filter(s => s.status === 'upcoming');
+            else if (type === 'finished') filtered = sportEvents.filter(s => s.status === 'finished');
+
+            const statusMap = {
+                live: '<span class="match-status status-live">● LIVE</span>',
+                upcoming: '<span class="match-status status-upcoming">📅 Скоро</span>',
+                finished: '<span class="match-status status-finished">✅ Завершен</span>'
+            };
+
+            const icons = {
+                football: '⚽',
+                basketball: '🏀',
+                tennis: '🎾',
+                mma: '🥊',
+                formula1: '🏎️'
+            };
+
+            container.innerHTML = filtered.map(s => `
+                <div class="match-card" onclick="openSportDetail(${s.id})">
+                    <div class="teams">
+                        <span>${icons[s.sport] || '🏆'} ${s.team1}</span>
+                        <span class="vs">vs</span>
+                        <span>${s.team2}</span>
+                    </div>
+                    <div class="score">${s.score || '—'}</div>
+                    <div class="match-info">
+                        <span>${s.tournament}</span>
+                        <span>${s.date} ${s.time}</span>
+                        ${statusMap[s.status] || ''}
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('sportCount').textContent = `(${filtered.length})`;
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-futbol"></i>Нет событий</div>';
+            }
+        }
+
+        // ================================================================
+        // 8. ИЗБРАННОЕ
+        // ================================================================
+
+        function toggleFavorite(id) {
+            const index = favorites.indexOf(id);
+            if (index > -1) {
+                favorites.splice(index, 1);
+                showToast('Удалено из избранного', 'warning');
+            } else {
+                favorites.push(id);
+                showToast('Добавлено в избранное', 'success');
+            }
+            saveData();
+            updateFavBadge();
+            renderFavorites();
+            renderHome();
+            renderMovies();
+            renderSeries();
+        }
+
+        function updateFavBadge() {
+            document.getElementById('favBadge').textContent = favorites.length;
+            document.getElementById('favCount').textContent = `(${favorites.length})`;
+        }
+
+        function renderFavorites() {
+            const container = document.getElementById('favoritesContent');
+            const favContent = content.filter(c => favorites.includes(c.id));
+            container.innerHTML = favContent.length > 0 ?
+                favContent.map(c => renderContentCard(c)).join('') :
+                '<div class="empty-state"><i class="fas fa-heart"></i>Нет избранного</div>';
+        }
+
+        function toggleFavorites() {
+            showPage('favorites');
+            renderFavorites();
+        }
+
+        // ================================================================
+        // 9. ДЕТАЛИ КОНТЕНТА
+        // ================================================================
+
+        function openDetail(id) {
+            const item = content.find(c => c.id === id);
+            if (!item) return;
+
+            const modal = document.getElementById('modalOverlay');
+            const body = document.getElementById('modalBody');
+            const isFav = favorites.includes(item.id);
+            const ratingStars = '⭐'.repeat(Math.floor(item.rating || 0)) + (item.rating % 1 >= 0.5 ? '⭐' : '');
+
+            body.innerHTML = `
+                <div class="detail-poster">${item.poster || '📦'}</div>
+                <h2 style="font-size:1.6rem;margin:12px 0 4px;">${item.title}</h2>
+                <div class="detail-row"><span class="label">Год</span><span class="value">${item.year}</span></div>
+                <div class="detail-row"><span class="label">Страна</span><span class="value">${item.country}</span></div>
+                <div class="detail-row"><span class="label">Жанр</span><span class="value">${item.genre}</span></div>
+                <div class="detail-row"><span class="label">Продолжительность</span><span class="value">${item.duration}</span></div>
+                <div class="detail-row"><span class="label">Рейтинг</span><span class="value">${ratingStars} ${item.rating || 0}</span></div>
+                <div class="detail-row"><span class="label">Описание</span><span class="value" style="font-weight:400;">${item.description}</span></div>
+                <div class="modal-actions">
+                    <button class="btn-watch" onclick="watchContent(${item.id})"><i class="fas fa-play"></i> Смотреть</button>
+                    <button class="btn-fav ${isFav ? 'active' : ''}" onclick="toggleFavorite(${item.id});openDetail(${item.id});">
+                        <i class="fas fa-heart"></i> ${isFav ? 'В избранном' : 'В избранное'}
+                    </button>
+                </div>
+                <div style="margin-top:16px;">
+                    <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:8px;">🎬 Рекомендуемые</div>
+                    <div style="display:flex;gap:12px;overflow-x:auto;padding:4px 0;">
+                        ${content.filter(c => c.id !== item.id && c.genre === item.genre).slice(0,4).map(c =>
+                            `<div style="min-width:80px;background:var(--bg-secondary);border-radius:var(--radius-sm);padding:8px;text-align:center;cursor:pointer;font-size:0.7rem;" onclick="openDetail(${c.id})">
+                                ${c.poster || '📦'}<br>${c.title.substring(0,12)}
+                            </div>`
+                        ).join('')}
+                    </div>
+                </div>
+            `;
+
+            modal.classList.add('active');
+        }
+
+        function openSportDetail(id) {
+            const item = sportEvents.find(s => s.id === id);
+            if (!item) return;
+
+            const modal = document.getElementById('modalOverlay');
+            const body = document.getElementById('modalBody');
+            const statusMap = {
+                live: '🔴 LIVE',
+                upcoming: '📅 Скоро',
+                finished: '✅ Завершен'
+            };
+
+            body.innerHTML = `
+                <h2 style="margin-bottom:12px;">🏆 ${item.team1} vs ${item.team2}</h2>
+                <div class="detail-row"><span class="label">Счёт</span><span class="value" style="font-size:1.4rem;color:var(--primary);">${item.score || '—'}</span></div>
+                <div class="detail-row"><span class="label">Турнир</span><span class="value">${item.tournament}</span></div>
+                <div class="detail-row"><span class="label">Дата</span><span class="value">${item.date} ${item.time}</span></div>
+                <div class="detail-row"><span class="label">Статус</span><span class="value">${statusMap[item.status] || item.status}</span></div>
+                ${item.highlights ? `<div class="detail-row"><span class="label">Обзор</span><span class="value" style="font-weight:400;">${item.highlights}</span></div>` : ''}
+                <div class="modal-actions">
+                    <button class="btn-watch" onclick="watchContent(${item.id})"><i class="fas fa-play"></i> Смотреть трансляцию</button>
+                    <button class="btn-fav" onclick="closeModal()">Закрыть</button>
+                </div>
+            `;
+
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
+
+        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        // ================================================================
+        // 10. ПЛЕЕР
+        // ================================================================
+
+        function watchContent(id) {
+            const item = content.find(c => c.id === id) || sportEvents.find(s => s.id === id);
+            if (!item) {
+                showToast('Контент не найден', 'error');
+                return;
+            }
+
+            // Добавляем в историю
+            if (currentUser) {
+                history.push({ id: item.id, title: item.title || `${item.team1} vs ${item.team2}`, date: new Date()
+                        .toISOString() });
+                saveData();
+            }
+
+            closeModal();
+            showToast(`▶️ Воспроизведение: ${item.title || item.team1 + ' vs ' + item.team2}`, 'success');
+
+            // Имитация плеера — показываем модалку с видео
+            const modal = document.getElementById('modalOverlay');
+            const body = document.getElementById('modalBody');
+            body.innerHTML = `
+                <div style="background:#000;border-radius:var(--radius-sm);aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
+                    <div style="font-size:5rem;color:var(--primary);">▶️</div>
+                    <div style="color:var(--text-muted);font-size:0.9rem;">Сейчас воспроизводится: ${item.title || item.team1 + ' vs ' + item.team2}</div>
+                    <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;">
+                        <button onclick="showToast('⏪ Перемотка назад', 'warning')" style="background:var(--bg-secondary);color:#fff;padding:8px 16px;border:none;border-radius:40px;cursor:pointer;">⏪ 10с</button>
+                        <button onclick="showToast('⏸️ Пауза', 'warning')" style="background:var(--bg-secondary);color:#fff;padding:8px 16px;border:none;border-radius:40px;cursor:pointer;">⏸️ Пауза</button>
+                        <button onclick="showToast('⏩ Перемотка вперёд', 'warning')" style="background:var(--bg-secondary);color:#fff;padding:8px 16px;border:none;border-radius:40px;cursor:pointer;">⏩ 10с</button>
+                        <button onclick="showToast('🔊 Громкость 70%', 'warning')" style="background:var(--bg-secondary);color:#fff;padding:8px 16px;border:none;border-radius:40px;cursor:pointer;">🔊</button>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
+                        <button onclick="showToast('📺 Качество 720p', 'success')" style="background:var(--bg-secondary);color:#fff;padding:4px 12px;border:none;border-radius:40px;cursor:pointer;font-size:0.7rem;">720p</button>
+                        <button onclick="showToast('📺 Качество 1080p', 'success')" style="background:var(--bg-secondary);color:#fff;padding:4px 12px;border:none;border-radius:40px;cursor:pointer;font-size:0.7rem;">1080p</button>
+                        <button onclick="showToast('⏱️ Скорость x1.5', 'success')" style="background:var(--bg-secondary);color:#fff;padding:4px 12px;border:none;border-radius:40px;cursor:pointer;font-size:0.7rem;">1.5x</button>
+                        <button onclick="showToast('📝 Субтитры включены', 'success')" style="background:var(--bg-secondary);color:#fff;padding:4px 12px;border:none;border-radius:40px;cursor:pointer;font-size:0.7rem;">📝 CC</button>
+                    </div>
+                    <div style="width:80%;height:4px;background:var(--bg-secondary);border-radius:10px;position:relative;">
+                        <div style="width:30%;height:100%;background:var(--primary);border-radius:10px;"></div>
+                    </div>
+                    <button class="close-btn" onclick="closeModal()" style="background:var(--bg-secondary);color:#fff;padding:8px 24px;border:none;border-radius:40px;cursor:pointer;font-size:0.85rem;">Закрыть плеер</button>
+                </div>
+            `;
+            modal.classList.add('active');
+        }
+
+        // ================================================================
+        // 11. ПОИСК
+        // ================================================================
+
+        function searchContent() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            if (!query) {
+                renderHome();
+                renderMovies();
+                renderSeries();
+                return;
+            }
+
+            const results = content.filter(c =>
+                c.title.toLowerCase().includes(query) ||
+                c.genre.toLowerCase().includes(query) ||
+                c.country.toLowerCase().includes(query) ||
+                c.year.toString().includes(query)
+            );
+
+            // Показываем результаты на главной
+            const container = document.getElementById('homeContent');
+            if (results.length > 0) {
+                container.innerHTML = results.map(c => renderContentCard(c)).join('');
+                document.getElementById('homeCount').textContent = `(Найдено: ${results.length})`;
+                // Переключаем на главную если не на ней
+                if (!document.getElementById('page-home').classList.contains('active')) {
+                    showPage('home');
+                }
+                                // Обновляем заголовок
+                document.querySelector('#page-home .page-title').innerHTML = `
+                    <i class="fas fa-search" style="color:var(--primary);"></i> Результаты поиска
+                    <span class="count">(${results.length})</span>
+                `;
+            } else {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-search"></i>Ничего не найдено</div>`;
+                document.getElementById('homeCount').textContent = '(0)';
+            }
+        }
+
+        // ================================================================
+        // 12. ПРОФИЛЬ
+        // ================================================================
+
+        function renderProfile() {
+            const container = document.getElementById('profileContent');
+            if (!container) return;
+
+            if (!currentUser) {
+                container.innerHTML = `
+                    <div class="auth-container">
+                        <h3 style="margin-bottom:16px;">Вход в OnlyGo</h3>
+                        <div id="authError" class="error"></div>
+                        <input type="email" id="loginEmail" placeholder="Email" value="admin@onlygo.com" />
+                        <input type="password" id="loginPassword" placeholder="Пароль" value="admin123" />
+                        <button onclick="login()"><i class="fas fa-sign-in-alt"></i> Войти</button>
+                        <div class="switch">
+                            Нет аккаунта? <a onclick="showRegister()">Зарегистрироваться</a>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            const historyCount = history.filter(h => h.id).length;
+
+            container.innerHTML = `
+                <div class="profile-card">
+                    <h3 style="margin-bottom:12px;">👤 ${currentUser.name}</h3>
+                    <div class="field"><span class="label">Email</span><span class="value">${currentUser.email}</span></div>
+                    <div class="field"><span class="label">Роль</span><span class="value">${currentUser.isAdmin ? 'Администратор' : 'Пользователь'}</span></div>
+                    <div class="field"><span class="label">Избранное</span><span class="value">${favorites.length}</span></div>
+                    <div class="field"><span class="label">История просмотров</span><span class="value">${historyCount}</span></div>
+                    <div class="profile-actions">
+                        <button class="btn-edit" onclick="editProfile()"><i class="fas fa-edit"></i> Редактировать</button>
+                        <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Выйти</button>
+                        <button onclick="showPage('favorites')" style="background:var(--bg-primary);color:var(--text-secondary);border:1px solid var(--border-color);padding:8px 20px;border-radius:40px;font-weight:600;font-size:0.85rem;cursor:pointer;">
+                            <i class="fas fa-heart" style="color:var(--danger);"></i> Избранное
+                        </button>
+                    </div>
+                    ${historyCount > 0 ? `
+                        <div style="margin-top:16px;border-top:1px solid var(--border-color);padding-top:12px;">
+                            <h4 style="font-size:0.9rem;margin-bottom:8px;">📜 История просмотров</h4>
+                            ${history.slice(-5).reverse().map(h =>
+                                `<div style="font-size:0.8rem;color:var(--text-secondary);padding:4px 0;border-bottom:1px solid var(--border-color);">
+                                    ${h.title || 'Просмотр'} — ${new Date(h.date).toLocaleDateString()}
+                                </div>`
+                            ).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function showRegister() {
+            const container = document.getElementById('profileContent');
+            container.innerHTML = `
+                <div class="auth-container">
+                    <h3 style="margin-bottom:16px;">Регистрация</h3>
+                    <div id="authError" class="error"></div>
+                    <input type="text" id="regName" placeholder="Имя" />
+                    <input type="email" id="regEmail" placeholder="Email" />
+                    <input type="password" id="regPassword" placeholder="Пароль" />
+                    <input type="password" id="regPassword2" placeholder="Повторите пароль" />
+                    <button onclick="register()"><i class="fas fa-user-plus"></i> Зарегистрироваться</button>
+                    <div class="switch">
+                        Уже есть аккаунт? <a onclick="renderProfile()">Войти</a>
+                    </div>
+                </div>
+            `;
+        }
+
+        function register() {
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const password2 = document.getElementById('regPassword2').value;
+            const error = document.getElementById('authError');
+
+            if (!name || !email || !password) {
+                error.textContent = 'Заполните все поля';
+                return;
+            }
+            if (password !== password2) {
+                error.textContent = 'Пароли не совпадают';
+                return;
+            }
+            if (users.find(u => u.email === email)) {
+                error.textContent = 'Пользователь уже существует';
+                return;
+            }
+
+            const newUser = {
+                id: users.length + 1,
+                name: name,
+                email: email,
+                password: password,
+                isAdmin: false,
+                blocked: false
+            };
+            users.push(newUser);
+            currentUser = newUser;
+            saveData();
+            showToast('Регистрация успешна!', 'success');
+            renderProfile();
+            renderAdmin();
+        }
+
+        function login() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            const error = document.getElementById('authError');
+
+            if (!email || !password) {
+                error.textContent = 'Введите email и пароль';
+                return;
+            }
+
+            const user = users.find(u => u.email === email && u.password === password);
+            if (!user) {
+                error.textContent = 'Неверный email или пароль';
+                return;
+            }
+            if (user.blocked) {
+                error.textContent = 'Аккаунт заблокирован';
+                return;
+            }
+
+            currentUser = user;
+            saveData();
+            showToast(`Добро пожаловать, ${user.name}!`, 'success');
+            renderProfile();
+            renderAdmin();
+        }
+
+        function logout() {
+            currentUser = null;
+            isAdmin = false;
+            saveData();
+            showToast('Вы вышли', 'warning');
+            renderProfile();
+            renderAdmin();
+        }
+
+        function editProfile() {
+            if (!currentUser) return;
+            const newName = prompt('Новое имя:', currentUser.name);
+            if (newName && newName.trim()) {
+                currentUser.name = newName.trim();
+                const user = users.find(u => u.id === currentUser.id);
+                if (user) user.name = newName.trim();
+                saveData();
+                renderProfile();
+                showToast('Профиль обновлён', 'success');
+            }
+        }
+
+        // ================================================================
+        // 13. ГЕРОЙ БАННЕР
+        // ================================================================
+
+        function updateHero() {
+            const popular = content.filter(c => c.isPopular);
+            if (popular.length > 0) {
+                const random = popular[Math.floor(Math.random() * popular.length)];
+                document.getElementById('heroTitle').textContent = random.title;
+                document.getElementById('heroDesc').textContent = random.description || 'Самый популярный контент на OnlyGo';
+                document.getElementById('heroBanner').style.background =
+                    `linear-gradient(135deg, #6c5ce7, #0984e3)`;
+            }
+        }
+
+        // ================================================================
+        // 14. АДМИН
+        // ================================================================
+
+        function showAdminLogin() {
+            if (isAdmin) {
+                showPage('admin');
+                renderAdmin();
+                return;
+            }
+            const password = prompt('Введите пароль администратора:');
+            if (password === '2009') {
+                isAdmin = true;
+                saveData();
+                showToast('Добро пожаловать в админ-панель!', 'success');
+                showPage('admin');
+                renderAdmin();
+            } else if (password !== null) {
+                showToast('Неверный пароль', 'error');
+            }
+        }
+
+        function renderAdmin() {
+            const container = document.getElementById('adminContent');
+            if (!container) return;
+
+            if (!isAdmin) {
+                container.innerHTML = `
+                    <div style="background:var(--bg-card);border-radius:var(--radius);padding:40px;text-align:center;border:1px solid var(--border-color);">
+                        <i class="fas fa-lock" style="font-size:3rem;color:var(--text-muted);margin-bottom:12px;display:block;"></i>
+                        <h3>Доступ ограничен</h3>
+                        <p style="color:var(--text-muted);margin:8px 0 16px;">Войдите как администратор</p>
+                        <button onclick="showAdminLogin()" style="background:var(--gradient);color:#fff;border:none;padding:12px 32px;border-radius:40px;font-weight:700;cursor:pointer;">
+                            <i class="fas fa-user-shield"></i> Войти
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            const totalUsers = users.length;
+            const totalContent = content.length;
+            const totalSport = sportEvents.length;
+            const totalFavs = favorites.length;
+
+            container.innerHTML = `
+                <div class="admin-panel">
+                    <div class="admin-stats">
+                        <div class="stat"><div class="num">${totalContent}</div><div class="label">Фильмы/Сериалы</div></div>
+                        <div class="stat"><div class="num">${totalSport}</div><div class="label">Спорт</div></div>
+                        <div class="stat"><div class="num">${totalUsers}</div><div class="label">Пользователи</div></div>
+                        <div class="stat"><div class="num">${totalFavs}</div><div class="label">Избранное</div></div>
+                    </div>
+
+                    <h3 class="admin-section-title"><i class="fas fa-plus"></i> Добавить контент</h3>
+                    <form class="admin-form" id="adminAddForm">
+                        <div class="field"><label>Название</label><input type="text" id="adminTitle" required /></div>
+                        <div class="field"><label>Тип</label>
+                            <select id="adminType"><option value="movie">Фильм</option><option value="series">Сериал</option></select>
+                        </div>
+                        <div class="field"><label>Год</label><input type="number" id="adminYear" value="2024" /></div>
+                        <div class="field"><label>Страна</label><input type="text" id="adminCountry" value="США" /></div>
+                        <div class="field"><label>Жанр</label><input type="text" id="adminGenre" value="Фантастика" /></div>
+                        <div class="field"><label>Продолжительность</label><input type="text" id="adminDuration" value="120 мин" /></div>
+                        <div class="field"><label>Рейтинг</label><input type="number" id="adminRating" value="7.5" step="0.1" /></div>
+                        <div class="field" style="flex:2;"><label>Описание</label><input type="text" id="adminDescription" /></div>
+                        <div class="field"><label>Постер (эмодзи)</label><input type="text" id="adminPoster" value="🎬" /></div>
+                        <div class="field"><label>Категория</label>
+                            <select id="adminCategory">
+                                <option value="Фантастика">Фантастика</option>
+                                <option value="Боевик">Боевик</option>
+                                <option value="Комедия">Комедия</option>
+                                <option value="Драма">Драма</option>
+                                <option value="Ужасы">Ужасы</option>
+                                <option value="Мультфильмы">Мультфильмы</option>
+                                <option value="Фэнтези">Фэнтези</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-submit"><i class="fas fa-plus"></i> Добавить</button>
+                    </form>
+
+                    <h3 class="admin-section-title"><i class="fas fa-list"></i> Управление контентом</h3>
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
+                            <thead><tr><th>ID</th><th>Название</th><th>Тип</th><th>Год</th><th>Жанр</th><th>Действия</th></tr></thead>
+                            <tbody id="adminContentTable"></tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="admin-section-title"><i class="fas fa-users"></i> Пользователи</h3>
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
+                            <thead><tr><th>ID</th><th>Имя</th><th>Email</th><th>Роль</th><th>Статус</th><th>Действия</th></tr></thead>
+                            <tbody id="adminUsersTable"></tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="admin-section-title"><i class="fas fa-futbol"></i> Спорт</h3>
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
+                            <thead><tr><th>ID</th><th>Команда 1</th><th>Команда 2</th><th>Счёт</th><th>Статус</th><th>Действия</th></tr></thead>
+                            <tbody id="adminSportTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+
+            // Заполняем таблицы
+            renderAdminContent();
+            renderAdminUsers();
+            renderAdminSport();
+
+            // Обработка формы
+            document.getElementById('adminAddForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addContent();
+            });
+        }
+
+        function renderAdminContent() {
+            const tbody = document.getElementById('adminContentTable');
+            if (!tbody) return;
+            tbody.innerHTML = content.map(c => `
+                <tr>
+                    <td>${c.id}</td>
+                    <td>${c.title}</td>
+                    <td>${c.type === 'movie' ? '🎬 Фильм' : '📺 Сериал'}</td>
+                    <td>${c.year}</td>
+                    <td>${c.genre}</td>
+                    <td class="actions">
+                        <button class="edit-btn" onclick="editContent(${c.id})"><i class="fas fa-edit"></i></button>
+                        <button class="delete-btn" onclick="deleteContent(${c.id})"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderAdminUsers() {
+            const tbody = document.getElementById('adminUsersTable');
+            if (!tbody) return;
+            tbody.innerHTML = users.map(u => `
+                <tr>
+                    <td>${u.id}</td>
+                    <td>${u.name}</td>
+                    <td>${u.email}</td>
+                    <td>${u.isAdmin ? '👑 Админ' : '👤 Пользователь'}</td>
+                    <td>${u.blocked ? '🔴 Заблокирован' : '🟢 Активен'}</td>
+                    <td class="actions">
+                        ${!u.isAdmin ? (u.blocked ?
+                            `<button class="unblock-btn" onclick="unblockUser(${u.id})">Разблок.</button>` :
+                            `<button class="block-btn" onclick="blockUser(${u.id})">Заблок.</button>`) : ''}
+                        <button class="delete-btn" onclick="deleteUser(${u.id})"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderAdminSport() {
+            const tbody = document.getElementById('adminSportTable');
+            if (!tbody) return;
+            tbody.innerHTML = sportEvents.map(s => `
+                <tr>
+                    <td>${s.id}</td>
+                    <td>${s.team1}</td>
+                    <td>${s.team2}</td>
+                    <td>${s.score || '—'}</td>
+                    <td>${s.status}</td>
+                    <td class="actions">
+                        <button class="edit-btn" onclick="editSport(${s.id})"><i class="fas fa-edit"></i></button>
+                        <button class="delete-btn" onclick="deleteSport(${s.id})"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // ================================================================
+        // 15. АДМИН ДЕЙСТВИЯ
+        // ================================================================
+
+        function addContent() {
+            const title = document.getElementById('adminTitle').value.trim();
+            const type = document.getElementById('adminType').value;
+            const year = parseInt(document.getElementById('adminYear').value) || 2024;
+            const country = document.getElementById('adminCountry').value.trim() || 'США';
+            const genre = document.getElementById('adminGenre').value.trim() || 'Фантастика';
+            const duration = document.getElementById('adminDuration').value.trim() || '120 мин';
+            const rating = parseFloat(document.getElementById('adminRating').value) || 5.0;
+            const description = document.getElementById('adminDescription').value.trim() || 'Описание';
+            const poster = document.getElementById('adminPoster').value.trim() || '🎬';
+            const category = document.getElementById('adminCategory').value;
+
+            if (!title) {
+                showToast('Введите название', 'error');
+                return;
+            }
+
+            content.push({
+                id: nextContentId++,
+                type: type,
+                title: title,
+                year: year,
+                country: country,
+                genre: genre,
+                duration: duration,
+                rating: rating,
+                description: description,
+                poster: poster,
+                category: category,
+                isNew: true,
+                isPopular: false
+            });
+
+            saveData();
+            showToast(`"${title}" добавлен`, 'success');
+            renderAdmin();
+            renderHome();
+            renderMovies();
+            renderSeries();
+            document.getElementById('adminAddForm').reset();
+        }
+
+        function editContent(id) {
+            const item = content.find(c => c.id === id);
+            if (!item) return;
+
+            const newTitle = prompt('Название:', item.title);
+            if (newTitle === null) return;
+            const newGenre = prompt('Жанр:', item.genre);
+            if (newGenre === null) return;
+            const newRating = prompt('Рейтинг (1-10):', item.rating);
+            if (newRating === null) return;
+
+            item.title = newTitle.trim() || item.title;
+            item.genre = newGenre.trim() || item.genre;
+            item.rating = parseFloat(newRating) || item.rating;
+
+            saveData();
+            showToast('Обновлено', 'success');
+            renderAdmin();
+            renderHome();
+            renderMovies();
+            renderSeries();
+        }
+
+        function deleteContent(id) {
+            if (!confirm('Удалить контент?')) return;
+            content = content.filter(c => c.id !== id);
+            favorites = favorites.filter(f => f !== id);
+            saveData();
+            showToast('Удалено', 'warning');
+            renderAdmin();
+            renderHome();
+            renderMovies();
+            renderSeries();
+            renderFavorites();
+            updateFavBadge();
+        }
+
+        function editSport(id) {
+            const item = sportEvents.find(s => s.id === id);
+            if (!item) return;
+
+            const newScore = prompt('Счёт:', item.score || '');
+            if (newScore === null) return;
+            const newStatus = prompt('Статус (live/upcoming/finished):', item.status);
+            if (newStatus === null) return;
+
+            item.score = newScore.trim() || null;
+            item.status = newStatus.trim() || item.status;
+
+            saveData();
+            showToast('Спорт обновлён', 'success');
+            renderAdmin();
+            renderSport();
+        }
+
+        function deleteSport(id) {
+            if (!confirm('Удалить событие?')) return;
+            sportEvents = sportEvents.filter(s => s.id !== id);
+            saveData();
+            showToast('Событие удалено', 'warning');
+            renderAdmin();
+            renderSport();
+        }
+
+        function blockUser(id) {
+            const user = users.find(u => u.id === id);
+            if (!user || user.isAdmin) { showToast('Нельзя блокировать админа', 'error'); return; }
+            user.blocked = true;
+            saveData();
+            showToast('Пользователь заблокирован', 'warning');
+            renderAdmin();
+        }
+
+        function unblockUser(id) {
+            const user = users.find(u => u.id === id);
+            if (!user) return;
+            user.blocked = false;
+            saveData();
+            showToast('Пользователь разблокирован', 'success');
+            renderAdmin();
+        }
+
+        function deleteUser(id) {
+            const user = users.find(u => u.id === id);
+            if (!user || user.isAdmin) { showToast('Нельзя удалить админа', 'error'); return; }
+            if (!confirm(`Удалить ${user.name}?`)) return;
+            users = users.filter(u => u.id !== id);
+            if (currentUser && currentUser.id === id) { currentUser = null;
+                isAdmin = false; }
+            saveData();
+            showToast('Пользователь удалён', 'warning');
+            renderAdmin();
+            renderProfile();
+        }
+
+        // ================================================================
+        // 16. УВЕДОМЛЕНИЯ
+        // ================================================================
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(40px)';
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        }
+
+        // ================================================================
+        // 17. ЗАПУСК
+        // ================================================================
+
+        document.addEventListener('DOMContentLoaded', init);
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        console.log('🎬 OnlyGo приложение загружено!');
+        console.log('📦 Контента:', content.length);
+        console.log('👤 Пользователей:', users.length);
+        console.log('⚽ Спорт событий:', sportEvents.length);
+        console.log('⭐ Для входа в админ-панель нажмите на 🛡️');
+        console.log('🔑 Пароль админа: 2009');
+    </script>
+</body>
+</html>
